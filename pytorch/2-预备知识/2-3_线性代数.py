@@ -103,5 +103,5 @@ print(torch.norm(u))
 # 计算向量的L1范数
 print(torch.abs(u).sum())
 
-# 计算矩阵的L2范数
+# 计算矩阵的Frobenius范数（相当于矩阵的L2范数）
 print(torch.norm(torch.ones(4,  9)))
