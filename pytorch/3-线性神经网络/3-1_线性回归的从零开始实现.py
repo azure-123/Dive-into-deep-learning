@@ -67,3 +67,6 @@ for i in range(epoch):
     with torch.no_grad():
         train_l = loss(net(w, features, b), labels) # 计算整体的损失函数
         print(f'epoch {i + 1}, loss {float(train_l.mean()):f}') # 打印该轮的均方误差损失函数
+
+print(f'w的估计误差: {true_w - w.reshape(true_w.shape)}')
+print(f'b的估计误差: {true_b - b}')
