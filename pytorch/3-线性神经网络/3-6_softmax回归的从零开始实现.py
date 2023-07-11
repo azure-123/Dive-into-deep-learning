@@ -23,3 +23,8 @@ X = torch.normal(0, 1, (2, 5))
 X_prob = softmax(X)
 print(X_prob)
 print(X_prob.sum(dim=1))
+
+# 定义网络，需要将图像拉长为28*28
+def net(X):
+    return softmax(torch.matmul(X.reshape(-1, W.shape[0]), W) + b)
+
