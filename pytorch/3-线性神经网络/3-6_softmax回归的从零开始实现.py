@@ -104,5 +104,14 @@ def updater(batch_size):
 num_epochs = 10
 train_ch3(net=net, train_iter=train_iter, test_iter=test_iter, loss=cross_entropy, num_epochs=num_epochs,updater=updater)
 
+def predict_ch3(net, test_iter, n=6):  #@save
+    """预测标签（定义见第3章）"""
+    for X, y in test_iter:
+        trues = d2l.get_fashion_mnist_labels(y)
+        preds = d2l.get_fashion_mnist_labels(net(X).argmax(dim=1))
+        titles = [true + '\n' + pred for true, pred in zip(trues, preds)]
+        d2l.show_images(X[0:n].reshape((n, 28, 28)), 1, n, titles=titles[0:n])
+
+predict_ch3(net=net,test_iter=test_iter)
 
 
