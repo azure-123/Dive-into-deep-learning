@@ -39,5 +39,70 @@ def cross_entropy(y_hat, y):
 
 print(cross_entropy(y_hat, y)) # 第一个正确分类是第0个，但是y_hat中其概率特别小，说明预测错误，返回值很大；第二个预测正确了，返回值很小
 
+def accuracy(y_hat, y):
+    """计算预测正确的数量"""
+    if len(y_hat) > 1 and y_hat.shape[1] > 1:
+        y_hat = torch.argmax(y_hat, dim=1)
+    cmp = y_hat.type(y.dtype) == y # 将y_hat和y的元素转化为一致再比较
+    return float(cmp.type(y.dtype).sum()) # 由于cmp都是True和False组成的tensor，因此转化为int类型
+
+print(accuracy(y_hat, y) / len(y))
+
+class Accumulator:  #@save
+    """在n个变量上累加"""
+    def __init__(self, n):
+        self.data = [0.0] * n
+
+    def add(self, *args):
+        self.data = [a + float(b) for a, b in zip(self.data, args)]
+
+    def reset(self):
+        self.data = [0.0] * len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+    
+
+def evaluate_accuracy(net, data_iter):  #@save
+    """计算在指定数据集上模型的精度"""
+    if isinstance(net, torch.nn.Module):
+        net.eval() # 网络设置为评估模式
+    metric = Accumulator(2) # 创建一个累加器，第一个元素为预测正确的数量，第二个元素为预测总数
+    with torch.no_grad():
+        for X, y in data_iter:
+            metric.add(accuracy(net(X), y), y.numel()) # 每个迭代轮数都添加预测正确的数量和总数
+    return metric[0] / metric[1]
+
+def train_epoch_ch3(net, train_iter, loss, updater):  #@save
+    """训练模型一个迭代周期（定义见第3章）"""
+    if isinstance(net, torch.nn.Module):
+        net.train() # 将网络设置为训练模式
+    metric = Accumulator(3) # 创建一个累加器，第一个元素为总损失，第二个元素为预测正确的数量，第三个元素为预测总数
+    for X, y in train_iter:
+        y_hat = net(X)
+        l = loss(y_hat, y)
+        if isinstance(updater, torch.optim.Optimizer): # 若updater是torch模块中自带的
+            updater.zero_grad()
+            l.mean().backward()
+            updater.step()
+        else: # 若为自己定义的updater
+            l.sum().backward()
+            updater(X.shape[0])
+        metric.add(float(l.sum()), accuracy(y_hat, y), y.numel())
+    return metric[0] / metric[2], metric[1] / metric[2] # 返回平均损失和准确度
+
+def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  #@save
+    for epoch in range(num_epochs):
+        train_loss, train_acc = train_epoch_ch3(net, train_iter, loss, updater)
+        test_acc = evaluate_accuracy(net, test_iter)
+        print(f'epoch {epoch + 1}, accuracy {test_acc:f}') # 打印该轮的损失
+
+lr = 0.1
+def updater(batch_size):
+    return d2l.sgd([W, b], lr=lr, batch_size=batch_size)
+
+num_epochs = 10
+train_ch3(net=net, train_iter=train_iter, test_iter=test_iter, loss=cross_entropy, num_epochs=num_epochs,updater=updater)
+
 
 
