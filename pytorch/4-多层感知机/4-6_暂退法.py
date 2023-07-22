@@ -11,7 +11,7 @@ def dropout_layer(X, dropout):
     # dropout为0，说明全不丢弃
     if dropout == 0:
         return X
-    mask = (torch.randn(X.shape) > dropout).float()
+    mask = (torch.rand(X.shape) > dropout).float()
     return mask * X / (1 - dropout)
 
 # 测试dropout层
