@@ -105,3 +105,36 @@ def loss_rmse(net, features, labels):
     rmse = torch.sqrt(loss(torch.log(clipped_preds), torch.log(labels)))
     return rmse.item()
 
+# 开始训练
+def train(net, train_features, train_labels, test_features, test_labels, num_epochs, learning_rate, weight_decay, batch_size):
+    train_ls, test_ls = [], []
+    train_iter = d2l.load_array((train_features, train_labels), batch_size)
+    optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    for X, y in train_iter:
+        optimizer.zero_grad()
+        l = loss(net(X), y)
+        l.backward()
+        optimizer.step()
+    train_ls.append(loss_rmse(net, train_features, train_labels))
+    if test_labels is not None:
+        test_ls.append(loss_rmse(net, test_features, test_labels))
+    return train_ls, test_ls
+
+# k折交叉验证
+def get_k_fold_data(k, i, X, y):
+    assert k > 1
+    fold_size = X.shape[0] // k
+    X_train, y_train = None, None
+    X_valid, y_valid = None,None
+    for j in range(k):
+        idx = slice(j * fold_size, (j + 1) * fold_size)
+        X_part, y_part = X[idx, :], y[idx]
+        if j == i:
+            X_valid, y_valid = X_part, y_part
+        elif X_train is None:
+            X_train, y_train = X_part, y_part
+        else:
+            X_train = torch.cat([X_train, X_part], 0)
+            y_train = torch.cat([y_train, y_part], 0)
+    return X_valid, y_valid, X_train, y_train
+
