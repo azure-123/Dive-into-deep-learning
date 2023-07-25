@@ -88,9 +88,11 @@ loss = nn.MSELoss()
 in_features = train_features.shape[1]
 
 def get_net():
-    net = nn.Sequential(nn.Linear(in_features, 64), 
-                         nn.ReLU(),
-                         nn.Linear(64, 1))
+    net = nn.Sequential(nn.Linear(in_features, 64),
+                        nn.ReLU(),
+                        nn.Linear(64, 32),
+                        nn.ReLU(),
+                        nn.Linear(32, 1))
     return net
 
 def log_rmse(net, features, labels):
@@ -153,7 +155,7 @@ def k_fold(k, X_train, y_train, num_epochs, learning_rate, weight_decay,
               f'验证log rmse{float(valid_ls[-1]):f}')
     return train_l_sum / k, valid_l_sum / k
 
-k, num_epochs, lr, weight_decay, batch_size = 5, 100, 5, 0, 64
+k, num_epochs, lr, weight_decay, batch_size = 5, 100, 0.1, 3, 64
 train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr,
                           weight_decay, batch_size)
 print(f'{k}-折验证: 平均训练log rmse: {float(train_l):f}, '
@@ -176,3 +178,4 @@ def train_and_pred(train_features, test_features, train_labels, test_data,
 
 train_and_pred(train_features, test_features, train_labels, test_data,
                num_epochs, lr, weight_decay, batch_size)
+d2l.plt.show()
