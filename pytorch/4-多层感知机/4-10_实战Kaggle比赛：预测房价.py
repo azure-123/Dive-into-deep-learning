@@ -98,8 +98,6 @@ def get_net():
     net = nn.Sequential(nn.Linear(in_features,1))
     return net
 
-net = get_net()
-
 def loss_rmse(net, features, labels):
     clipped_preds = torch.clamp(net(features), 1, float('inf'))
     rmse = torch.sqrt(loss(torch.log(clipped_preds), torch.log(labels)))
@@ -138,3 +136,21 @@ def get_k_fold_data(k, i, X, y):
             y_train = torch.cat([y_train, y_part], 0)
     return X_valid, y_valid, X_train, y_train
 
+def k_fold(k, X_train, y_train, num_epochs, learning_rate, weight_decay, batch_size):
+    train_l_sum, valid_l_sum = 0, 0
+    for i in range(k):
+        data = get_k_fold_data(k, i, X_train, y_train)
+        net = get_net()
+        train_ls, valid_ls = train(net, *data, num_epochs=num_epochs, learning_rate=learning_rate, weight_decay=weight_decay,batch_size=batch_size)
+        train_l_sum += train_ls[-1]
+        valid_l_sum += valid_ls[-1]
+        if i == 0:
+            d2l.plot(list(range(1, num_epochs + 1)), [train_ls, valid_ls],
+                     xlabel='epoch', ylabel='rmse', xlim=[1, num_epochs],
+                     legend=['train', 'valid'], yscale='log')
+        print(f'折{i + 1}，训练log rmse{float(train_ls[-1]):f}, '
+              f'验证log rmse{float(valid_ls[-1]):f}')
+    return train_l_sum / k, valid_l_sum / k
+
+k, num_epochs, learning_rate, weight_decay, batch_size = 5, 100, 5, 0, 64
+train_l, test_l = k_fold(k, train_features, train_labels, num_epochs, learning_rate, weight_decay, batch_size)
