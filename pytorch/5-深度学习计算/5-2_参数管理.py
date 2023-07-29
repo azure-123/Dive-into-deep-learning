@@ -6,3 +6,4 @@ X = torch.rand(size=(2, 4))
 print(net(X))
 
 print(net[2].state_dict())
+
