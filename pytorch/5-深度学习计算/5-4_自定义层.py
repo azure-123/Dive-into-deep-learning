@@ -28,3 +28,8 @@ class MyLinear(nn.Module):
         return F.relu(linear)
 dense = MyLinear(5, 3)
 print(dense.weight)
+print(dense(torch.randn(2, 5)))
+
+# 使用自定义层构建模型
+net = nn.Sequential(MyLinear(64, 8), MyLinear(8, 1))
+print(net(torch.rand(2, 64)))
