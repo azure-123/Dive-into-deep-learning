@@ -7,13 +7,13 @@ class Reshape(nn.Module):
         return X.view((-1, 1, 28, 28))
 
 net = nn.Sequential(Reshape(), 
-                    nn.Conv2d(1, 6, kernel_size=5, padding=2), nn.Sigmoid(),
-                    nn.AvgPool2d(kernel_size=2, stride=2),
-                    nn.Conv2d(6, 16, kernel_size=5), nn.Sigmoid(),
-                    nn.AvgPool2d(kernel_size=2, stride=2),
+                    nn.Conv2d(1, 6, kernel_size=5, padding=2), nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2),
+                    nn.Conv2d(6, 16, kernel_size=5), nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2),
                     nn.Flatten(),
                     nn.Linear(16 * 5 * 5, 120), nn.ReLU(),
-                    nn.Linear(120, 84), nn.Sigmoid(),
+                    nn.Linear(120, 84), nn.ReLU(),
                     nn.Linear(84, 10))
 
 X = torch.rand(size=(1, 1, 28, 28), dtype=torch.float32)
@@ -22,7 +22,7 @@ for layer in net:
     print(layer.__class__.__name__,'output shape: \t',X.shape)
 
 # 模型训练
-batch_size = 256
+batch_size = 128
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 
 # 使用GPU计算模型精度
@@ -80,6 +80,6 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
           f'test acc {test_acc:.3f}')
     print(f'{metric[2] * num_epochs / timer.sum():.1f} examples/sec '
           f'on {str(device)}')
-lr, num_epochs = 0.9, 10
+lr, num_epochs = 0.1, 10
 train_ch6(net, train_iter, test_iter, num_epochs, lr, d2l.try_gpu())
 d2l.plt.show()
