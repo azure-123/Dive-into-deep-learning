@@ -80,6 +80,6 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
           f'test acc {test_acc:.3f}')
     print(f'{metric[2] * num_epochs / timer.sum():.1f} examples/sec '
           f'on {str(device)}')
-lr, num_epochs = 0.1, 10
+lr, num_epochs = 0.3, 10
 train_ch6(net, train_iter, test_iter, num_epochs, lr, d2l.try_gpu())
 d2l.plt.show()
