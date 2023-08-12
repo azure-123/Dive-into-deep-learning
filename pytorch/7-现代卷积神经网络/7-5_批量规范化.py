@@ -68,3 +68,4 @@ net = nn.Sequential(
     nn.Linear(84, 10))
 
 d2l.train_ch6(net, train_iter, test_iter, num_epochs, lr, d2l.try_gpu())
+d2l.plt.show()
