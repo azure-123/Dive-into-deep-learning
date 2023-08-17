@@ -5,7 +5,7 @@ from d2l import torch as d2l
 
 # 展示图片
 d2l.set_figsize()
-img = d2l.Image.open('../img/cat1.jpg')
+img = d2l.Image.open('C:\Users\weira\Desktop\deep_learning\Dive-into-deep-learning\pytorch\img\cat1.jpg')
 d2l.plt.imshow(img)
 
 # 查看数据增强的效果
