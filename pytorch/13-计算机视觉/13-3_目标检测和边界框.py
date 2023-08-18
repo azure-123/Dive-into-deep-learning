@@ -2,7 +2,7 @@ import torch
 from d2l import torch as d2l
 
 d2l.set_figsize()
-img = d2l.plt.imread('../img/catdog.jpg')
+img = d2l.plt.imread("C:/Users/weira/Desktop/deep_learning/d2l-zh/pytorch/img/catdog.jpg")
 d2l.plt.imshow(img)
 
 #@save
